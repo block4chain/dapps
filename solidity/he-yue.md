@@ -15,6 +15,21 @@ contract SimpleStorage {
 }
 ```
 
+## 构造函数
+
+关键字`constructor`为合约声明构造函数，构造函数可以在合约创建时或初始化代码中调用。构造函数可以通过关键字`private`, `public`修饰
+
+```text
+pragma solidity >=0.5.0 <0.7.0;
+
+contract A {
+    uint public a;
+    constructor(uint _a) internal {
+        a = _a;
+    }
+}
+```
+
 ## 状态变量
 
 合约可以创建状态变量用来持久化存储数据。

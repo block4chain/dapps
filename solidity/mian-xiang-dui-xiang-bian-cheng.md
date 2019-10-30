@@ -25,7 +25,7 @@ contract Mortal is Owned {
 }
 ```
 
-### 多重继承
+## 多重继承
 
 ```text
 contract Named is Owned, Mortal {
@@ -40,6 +40,26 @@ contract Named is Owned, Mortal {
             Mortal.kill();  //调用父方法
         }
     }
+}
+```
+
+## 构造函数
+
+合约继承时，可以通过两种方式为父合约设置构造函数参数
+
+```text
+pragma solidity >=0.4.22 <0.7.0;
+contract Base {
+    uint x;
+    constructor(uint _x) public { x = _x; }
+}
+// Either directly specify in the inheritance list...
+contract Derived1 is Base(7) {
+    constructor() public {}
+}
+// or through a "modifier" of the derived constructor.
+contract Derived2 is Base {
+    constructor(uint _y) Base(_y * _y) public {}
 }
 ```
 
