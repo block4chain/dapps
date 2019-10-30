@@ -225,7 +225,7 @@ contract mortal is owned {
 }
 ```
 
-### 事件
+## 事件
 
 * 事件\(Event\)允许合约向外部发出消息，客户端可以监听该消息。
 * 事件不可继承
@@ -243,6 +243,8 @@ contract ClientReceipt {
     }
 }
 ```
+
+
 
 
 
