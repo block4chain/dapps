@@ -95,12 +95,6 @@ contract SimpleStorage {
       <td style="text-align:left"></td>
     </tr>
     <tr>
-      <td style="text-align:left">Data Location</td>
-      <td style="text-align:left"><code>memory</code>, <code>storage</code>, <code>calldata</code>
-      </td>
-      <td style="text-align:left"></td>
-    </tr>
-    <tr>
       <td style="text-align:left">Array</td>
       <td style="text-align:left"><code>T[k]</code>, <code>T[]</code>
       </td>
@@ -116,11 +110,141 @@ contract SimpleStorage {
       <td style="text-align:left"></td>
     </tr>
     <tr>
-      <td style="text-align:left">mapping</td>
+      <td style="text-align:left">Map</td>
       <td style="text-align:left"><code>mapping(_KeyType =&gt; _ValueType)</code>
       </td>
       <td style="text-align:left"></td>
     </tr>
   </tbody>
-</table>
+</table>### 数据位置
+
+引用类型: Array、Struct、Map有需要通过标注\(annotation\)声明数据存储的位置:
+
+* memory
+
+数据没有存储在合约的状态数据库中
+
+* storage
+
+数据存储在合约的状态数据库中
+
+* calldata
+
+类型memory，但不可修改
+
+```text
+uint[] storage y = x;
+struct memory z = x;
+```
+
+Map类型数据只能用`storage`标注
+
+### 可见修饰符
+
+状态变量可以用一些修饰符修饰，声明变量的可见性:
+
+| 修饰符 | 含义 |
+| :--- | :--- |
+| public | 自动生成一个getter方法 |
+| internal | 只能被当前合约或子合约访问 |
+| private | 只能被当前合约访问 |
+
+## 函数
+
+关键字`function`合约可以声明若干函数
+
+```text
+function <函数名>(<parameter types>) {internal|external|public|private} [pure|view|payable] [returns (<return types>)]
+```
+
+### 可见性
+
+通过修饰符可以声明函数的可见性:
+
+| 修饰符 | 含义 |
+| :--- | :--- |
+| external | 函数可以被外部合约或交易调用 |
+| public | 可以被消息、合约方法、子合约方法调用 |
+| internal | 合约方法、子合约方法调用 |
+| private | 本合约方法调用 |
+
+### 函数重载
+
+合约函数支持重载，重载函数通过函数参数区分。
+
+### 只读函数
+
+关键字`view`可以声明函数不会直接修改状态变量 
+
+### 纯函数
+
+关键字`pure`可以声明函数不会直接读取或修改状态变量
+
+### 降级函数
+
+合约可以定义一个且只能定义一个匿名函数，该函数没有参数，也没有返回值，并且被必须被external修饰，这个函数称为降级函数。
+
+降级函数在外部调用没有匹配合约方法时被调用。
+
+### 可支付方法
+
+关键字`payable`将方法声明为可支付方法。即可以向该方法发送以太币。
+
+```text
+pragma solidity ^0.4.4;
+contract  Sample {
+    uint amount =0;
+    function payme() payable{
+        amount += msg.value;
+    }
+}
+```
+
+给合约定义一个payable的降级方法可以将合约声明为可支付合约，即可以向该合约转帐。
+
+## 函数修改器
+
+合约支持定义若干函数修改器，从而改变函数执行的效果
+
+```text
+//定义函数修改器
+contract owned {
+    modifier onlyOwner {
+        require(
+            msg.sender == owner,
+            "Only owner can call this function."
+        );
+        _;  //被修饰函数执行到此位置
+    }
+}
+//使用, mortal继承owned
+contract mortal is owned {
+    function close() public onlyOwner {
+        selfdestruct(owner);
+    }
+}
+```
+
+### 事件
+
+* 事件\(Event\)允许合约向外部发出消息，客户端可以监听该消息。
+* 事件不可继承
+
+```text
+pragma solidity >=0.4.21 <0.7.0;
+contract ClientReceipt {
+    event Deposit(
+        address indexed _from,
+        bytes32 indexed _id,
+        uint _value
+    );
+    function deposit(bytes32 _id) public payable {
+        emit Deposit(msg.sender, _id, msg.value);
+    }
+}
+```
+
+
+
+
 
